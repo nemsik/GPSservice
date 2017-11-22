@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private float currentDistance = 0f;
 
     private boolean isGPSFix = false;
-    private boolean GPSstatus = false;
+
 
     private boolean isStarted = false;
 
@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                     currentDistance += distance;
 
-
-                    //speed = (float) (distance/time)*3600;
                     speed = (location.getSpeed()*3600)/1000;
 
                     textSpeed.setText(String.format("%.1f",speed) + " km/h");
@@ -123,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     }
 
                 }
-
 
                 lastLocation = location;
                 Log.d("BOOM", "RECEIVED LOC");
@@ -182,13 +179,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         start = (Button) findViewById(R.id.start);
         wayPoint = (Button) findViewById(R.id.wayPoint);
 
-        isStarted = false;
-
 
         ATrack = new ArrayList<Track>();
         final TrackAdapter trackAdapter = new TrackAdapter(this, ATrack);
-        ListView listView = (ListView) findViewById(R.id.listView);
+        final ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(trackAdapter);
+
 
 
 
@@ -209,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
 
+        if(isStarted) wayPoint.setEnabled(true);
+        else wayPoint.setEnabled(false);
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,19 +227,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         isStarted = true;
                         start.setText("STOP");
                         wayPoint.setEnabled(true);
-                        trackAdapter.add(ATrack.get(countAtrack-1));
+                        trackAdapter.notifyDataSetChanged();
+                        listView.setSelection(trackAdapter.getCount()-1);
 
                     }
                 }else{
                     currentAvgspped /= currentCountavg;
-                   // ATrack.get(countAtrack-1).setFinished();
                     ATrack.get(countAtrack-1).addWayPoint(location, currentDistance, (double) location.getTime()-startLocation.getTime(), currentTopSpeed, currentAvgspped);
-                    ATrack.get(countAtrack-1).setEnd();
                     wayPoint.setEnabled(false);
                     start.setText("START");
                     isStarted = false;
                     currentDistance = 0;
-                    trackAdapter.add(ATrack.get(countAtrack-1));
+                    trackAdapter.notifyDataSetChanged();
+                    listView.setSelection(trackAdapter.getCount()-1);
                 }
             }
         });
@@ -256,10 +254,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 currentAvgspped = 0;
                 currentCountavg = 0;
                 currentTopSpeed = 0;
+                listView.setSelection(trackAdapter.getCount()-1);
                 trackAdapter.notifyDataSetChanged();
-                trackAdapter.add(ATrack.get(countAtrack-1));
-
-
             }
         });
 
@@ -281,9 +277,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
 
             TextView trackName = (TextView) convertView.findViewById(R.id.trackName);
-            TextView trackDistance = (TextView) convertView.findViewById(R.id.trackDistance);
+            TextView trackDistance = (TextView) convertView.findViewById(R.id.trackWaypoint);
+            TextView trackEnd = (TextView) convertView.findViewById(R.id.trackEnd);
 
-            trackDistance.setText(track.getDistance()+ " m");
+            trackName.setText(track.getName());
+            trackDistance.setText(track.getWaypoint());
+            trackEnd.setText(track.getEnd());
 
 
             return convertView;

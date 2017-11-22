@@ -23,6 +23,7 @@ public class Track {
     private float allTime = 0f;
     private float topSpeed = 0f;
     private float avgSpeed = 0f;
+    private int seconds, minutes;
 
 
     public Track(String name){
@@ -49,20 +50,63 @@ public class Track {
         Log.d("TRACK", "TIME "+Atime.toString());
     }
     
-    public void setEnd(){
+    public String getEnd(){
+        allDistance = 0f;
+        allTime = 0f;
+        avgSpeed = 0f;
         for (int i=0; i<Aroute.size(); i++){
             allDistance += Adistance.get(i);
             allTime += Atime.get(i);
             avgSpeed +=AavgSpeed.get(i);
         }
-        avgSpeed /= AavgSpeed.size()-1;
-        Log.d("TRACK", "ALL DIS: "+allDistance);
-        Log.d("TRACK", "ALL TIME: "+allTime);
+        avgSpeed /= (AavgSpeed.size()-1);
+
+        seconds = (int) (allTime/1000);
+        minutes = seconds / 60;
+        seconds %= 60;
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\n");
+        stringBuilder.append("Total distance: ");
+        stringBuilder.append(allDistance);
+        stringBuilder.append("\nTime: ");
+        stringBuilder.append(minutes + " m ");
+        stringBuilder.append(seconds + " s");
+        stringBuilder.append("\nAVG : ");
+        stringBuilder.append(avgSpeed);
+
+        return stringBuilder.toString();
     }
 
-
-    public float getDistance(){
-        return Adistance.get(Adistance.size()-1);
+    public String getName(){
+        return name;
     }
 
+    public String getWaypoint(){
+        String wayPoint = "";
+        StringBuilder stringBuilder = new StringBuilder(wayPoint);
+
+        for(int i=0 ; i<Aroute.size(); i++){
+            stringBuilder.append("\nWaypoint: " + i);
+
+            stringBuilder.append("\nDistance: ");
+            if(Adistance.get(i) <= 1000) stringBuilder.append(Adistance.get(i) + " m");
+            else stringBuilder.append(String.format("%.1f", Adistance.get(i)/1000) + " km");
+
+            stringBuilder.append("\nTime: ");
+
+            seconds = (int) (Atime.get(i)/1000);
+            minutes = seconds / 60;
+            seconds %= 60;
+            stringBuilder.append(minutes+" min ");
+            stringBuilder.append(seconds+" sec");
+
+
+            stringBuilder.append("\nAVG: " + AavgSpeed.get(i) + " TOP: "+AtopSpeed.get(i));
+            stringBuilder.append("\n");
+        }
+
+        wayPoint = stringBuilder.toString();
+        return wayPoint;
+    }
 }
