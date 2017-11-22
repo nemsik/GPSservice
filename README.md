@@ -1,5 +1,6 @@
 # GPSservice
 
+<br/>Android<br/>
 Dzięki tej aplikacji możemy mierzyć naszą akrualną prędkość, średnią i maksymalną jak i przebyty dystans.
 <br/>
 Dodatkowo, możemy naszą trasę dzielić na odcinki, tak jak to widać na zdjęciu poniżej.
